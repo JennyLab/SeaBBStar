@@ -34,20 +34,16 @@ seastar::future<> handle_rasta_connection(seastar::connected_socket s, seastar::
                     rasta_logger.info("Received RaSTA message: type={}, length={}, seq={}",
                         (int)header->message_type, header->pdu_length, header->sequence_number);
 
-                    // Aquí deberías implementar la lógica de tu protocolo RaSTA:
-                    // - Validar el mensaje
-                    // - Procesar el mensaje (ej. actualizar estado interno, enviar ACK, etc.)
-                    // - Posiblemente enviar una respuesta
-                    // Por simplicidad, solo echo el encabezado de vuelta (no es RaSTA real)
+ 
                     sbb_rasta::rasta_pdu_header response_header = *header; // O crea uno nuevo
-                    response_header.message_type = 0xFF; // Ejemplo: un tipo de respuesta
-                    response_header.sequence_number++; // Ejemplo: incrementar seq para respuesta
+                    response_header.message_type = 0xFF; // Example: MEssage
+                    response_header.sequence_number++; // Example: seq
 
                     auto response_buf = sbb_rasta::rasta_protocol_codec::serialize_rasta_message(response_header);
                     return out.write(response_buf.share()).then([&] {
                         return out.flush();
                     }).then([] {
-                        return seastar::stop_iteration::no; // Continuar procesando mensajes
+                        return seastar::stop_iteration::no; // Go go go continue!!!
                     });
                 })
                 .handle_exception([&] (std::exception_ptr e) {
@@ -62,11 +58,11 @@ seastar::future<> handle_rasta_connection(seastar::connected_socket s, seastar::
 }
 
 seastar::future<> rasta_server_main() {
-    // Escuchar en el puerto 12345 (o el puerto RaSTA real)
+    // Real Rasta With weed
     seastar::listen_options lo;
-    lo.reuse_address = true; // Permite reusar la dirección rápidamente
-    auto listener = seastar::listen(seastar::make_ipv4_address({12345}), lo);
-    rasta_logger.info("RaSTA server listening on port 12345...");
+    lo.reuse_address = true; // Reuase Port
+    auto listener = seastar::listen(seastar::make_ipv4_address({RASTA_TCP_PORT}), lo);
+    rasta_logger.info("[INFO] RaSTA server listening on port 12345...");
 
     return seastar::keep_doing([listener = std::move(listener)] () mutable {
         return listener.accept().then([] (seastar::connected_socket s, seastar::socket_address remote_address) {
