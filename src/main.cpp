@@ -53,7 +53,7 @@ seastar::future<> handle_rasta_connection(seastar::connected_socket s, seastar::
                 });
         });
     }).finally([remote_address] {
-        rasta_logger.info("Connection from {} closed.", remote_address);
+        rasta_logger.info("[INFO] Connection from {} closed.", remote_address);
     });
 }
 
@@ -71,7 +71,7 @@ seastar::future<> rasta_server_main() {
                 [] (seastar::connected_socket& s_ref, seastar::socket_address& remote_addr_ref) {
                 return handle_rasta_connection(std::move(s_ref), remote_addr_ref);
             });
-            return seastar::stop_iteration::no; // Continuar aceptando conexiones
+            return seastar::stop_iteration::no; // Continue with accept
         });
     });
 }
