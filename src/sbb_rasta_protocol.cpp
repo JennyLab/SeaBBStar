@@ -67,8 +67,6 @@ struct rasta_pdu_header {
 // Clase para parsear y serializar mensajes RaSTA
 class rasta_protocol_codec {
 public:
-    // Función para parsear un buffer en un objeto de mensaje RaSTA
-    // Esto es muy simplificado; el RaSTA real es mucho más complejo.
     static seastar::future<std::unique_ptr<rasta_pdu_header>> parse_rasta_message(seastar::input_stream<char>& in) {
         return in.read_exactly(sizeof(rasta_pdu_header)).then([] (seastar::temporary_buffer<char> buf) {
             if (buf.empty()) {
@@ -90,7 +88,6 @@ public:
         });
     }
 
-    // Función para serializar un objeto de mensaje RaSTA en un buffer
     static seastar::temporary_buffer<char> serialize_rasta_message(const rasta_pdu_header& header) {
         seastar::temporary_buffer<char> buf(sizeof(rasta_pdu_header));
         rasta_pdu_header h_net_order = header;
