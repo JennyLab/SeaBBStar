@@ -10,13 +10,13 @@
 #include <stdexcept>
 #include <memory>
 
-// Incluye tus definiciones de protocolo y codec
-#include "sbb_rasta_protocol.hh" // Asume que has guardado el código del Paso 2 aquí
+// Procotol & Codec
+#include "sbb_rasta_protocol.hh" 
 
 seastar::logger rasta_logger("rasta_server");
 
 seastar::future<> handle_rasta_connection(seastar::connected_socket s, seastar::socket_address remote_address) {
-    rasta_logger.info("Accepted connection from {}", remote_address);
+    rasta_logger.info("[INFO] Accepted connection from {}", remote_address);
 
     auto in = s.input();
     auto out = s.output();
@@ -47,7 +47,7 @@ seastar::future<> handle_rasta_connection(seastar::connected_socket s, seastar::
                     });
                 })
                 .handle_exception([&] (std::exception_ptr e) {
-                    rasta_logger.error("Error processing connection: {}", e);
+                    rasta_logger.error("[ERROR] main::future: Error processing connection: {}", e);
                     // Aquí puedes decidir cómo manejar el error (cerrar conexión, etc.)
                     return seastar::make_ready_future<seastar::stop_iteration>(seastar::stop_iteration::yes);
                 });
